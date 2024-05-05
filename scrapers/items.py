@@ -7,11 +7,14 @@ class QuoteItem(scrapy.Item):
     text = scrapy.Field()
     author = scrapy.Field()
 
-class PropertyItem(scrapy.Item):
+class CarItem(scrapy.Item):
     id = scrapy.Field()
-    image_urls = scrapy.Field()
-    images = scrapy.Field()
-    source = scrapy.Field()
+    brand = scrapy.Field()
+    model = scrapy.Field()
+    year = scrapy.Field()
+    price = scrapy.Field()
+    mileage = scrapy.Field()
+    fuel_type = scrapy.Field()
+    location = scrapy.Field()
     url = scrapy.Field()
-    link = scrapy.Field()
-    property_type = scrapy.Field()
+    source = scrapy.Field()
