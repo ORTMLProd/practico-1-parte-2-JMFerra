@@ -7,7 +7,7 @@ class QuoteItem(scrapy.Item):
     text = scrapy.Field()
     author = scrapy.Field()
 
-class CarItem(scrapy.Item):
+class PropertyItem(scrapy.Item):
     id = scrapy.Field()
     brand = scrapy.Field()
     model = scrapy.Field()

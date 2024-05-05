@@ -6,68 +6,59 @@ from scrapy.http.response.html import HtmlResponse
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 
-from scrapers.items import PropertyItem
+from scrapers.items import CarItem
 
 
-class GallitoSpider(CrawlSpider):
-    name = "gallito"
+class CaroneSpider(CrawlSpider):
+    name = "carone"
     custom_settings = {
         "USER_AGENT": (
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
             "(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         ),
         "FEEDS": {
-            "properties_gallito.jl": {"format": "jsonlines"},
+            "carone_data.json": {"format": "json"},
         },
         "CLOSESPIDER_ITEMCOUNT": 30,
     }
     start_urls = [
-        "https://www.gallito.com.uy/inmuebles/casas",  # !cant=80
-        "https://www.gallito.com.uy/inmuebles/apartamentos",  # !cant=80
+        "https://carone.com.uy/autos-usados-y-0km",
     ]
 
     rules = (
         Rule(
             LinkExtractor(
-                allow=(
-                    [
-                        r"\/inmuebles\/casas\?pag=\d+",  # !cant=80\?pag=\d+
-                        r"\/inmuebles\/apartamentos\?pag=\d+",  # !cant=80\?pag=\d+
-                    ]
-                )
-            )
+                restrict_css=".resultados .h-product .h-product-content a",
+                unique=True
+            ),
+            callback="parse_car"
         ),
-        Rule(LinkExtractor(allow=(r"-\d{8}$")), callback="parse_property"),
     )
 
-    def parse_property(self, response: HtmlResponse) -> Iterator[dict]:
+    def parse_car(self, response: HtmlResponse) -> Iterator[dict]:
         def get_with_css(query: str) -> str:
             return response.css(query).get(default="").strip()
 
-        def extract_with_css(query: str) -> list[str]:
-            return [
-                line for elem in response.css(query).extract() if (line := elem.strip())
-            ]
+        car_id = get_with_css(".id-ficha::text")
+        brand = get_with_css(".marca-ficha::text")
+        model = get_with_css(".modelo-ficha::text")
+        year = get_with_css(".anio-ficha::text")
+        price = get_with_css(".precio-ficha::text")
+        mileage = get_with_css(".kilometraje-ficha::text")
+        fuel_type = get_with_css(".combustible-ficha::text")
+        location = get_with_css(".localizacion-ficha::text")
+        url = requote_uri(response.request.url)
 
-        # property details
-        property_id = get_with_css("#HfCodigoAviso::attr('value')")
-        img_urls = get_with_css("#HstrImg::attr('value')")
-        img_urls = [img for img in img_urls.split(",") if img]
-        possible_types = {
-            "casa": "HOUSE",
-            "apartamento": "APARTMENT",
+        car = {
+            "id": car_id,
+            "brand": brand,
+            "model": model,
+            "year": year,
+            "price": price,
+            "mileage": mileage,
+            "fuel_type": fuel_type,
+            "location": location,
+            "url": url,
+            "source": "carone",
         }
-
-        # every property has this fixed list of details on gallito
-        fixed_details = extract_with_css("div.iconoDatos + p::text")
-        property_type = possible_types[fixed_details[0].lower()]
-
-        property = {
-            "id": property_id,
-            "image_urls": img_urls,
-            "source": "gallito",
-            "url": requote_uri(response.request.url),
-            "link": requote_uri(response.request.url),
-            "property_type": property_type,
-        }
-        yield PropertyItem(**property)
+        yield CarItem(**car)
