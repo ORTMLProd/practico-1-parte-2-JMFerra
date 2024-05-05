@@ -1,6 +1,6 @@
 import logging
 from collections import defaultdict
-
+import json
 from itemadapter import ItemAdapter
 from scrapy.exceptions import DropItem
 from scrapy.pipelines.images import ImagesPipeline
@@ -21,13 +21,34 @@ class DuplicatesPipeline:
             return item
 
 
+class JSONPipeline:
+    def __init__(self):
+        self.file = open('carone_data.json', 'w')
+        self.file.write("[\n")
+        self.first_item = True
+
+    def close_spider(self, spider):
+        self.file.write("\n]")
+        self.file.close()
+
+    def process_item(self, item, spider):
+        if self.first_item:
+            self.first_item = False
+        else:
+            self.file.write(",\n")
+
+        line = json.dumps(dict(item))
+        self.file.write(line)
+        return item
+
+
 class ItemLimit:
     def __init__(self, max_items_per_label: int, label_field: str):
         self.label_counts = defaultdict(int)
         self.max_items_per_label = max_items_per_label
         self.label_field = label_field
 
-    def process_item(self, item, spider: Spider) -> dict:
+    def process_item(self, item, spider) -> dict:
         adapter = ItemAdapter(item)
         label = adapter[self.label_field]
         if self.label_counts[label] >= self.max_items_per_label:

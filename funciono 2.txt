@@ -6,17 +6,15 @@ class CarOneSpider(scrapy.Spider):
     allowed_domains = ['carone.com.uy']
     
     def start_requests(self):
-        for page_number in range(1, 51):
+        page_number = 1
+        while True:
             url = f'https://carone.com.uy/autos-usados-y-0km?p={page_number}'
             yield scrapy.Request(url=url, callback=self.parse)
+            page_number += 1
 
     def parse(self, response):
         # Obtener los enlaces de los autos
         cars = response.xpath('//a[@class="link-primary"]/@href').getall()
-        if not cars:
-            self.logger.info(f"No se encontraron más autos en la página: {response.url}")
-            return
-        
         for car_link in cars:
             yield response.follow(car_link, callback=self.parse_car)
 

@@ -1,4 +1,5 @@
 import scrapy
+from scrapy.item import Item, Field
 
 class QuoteItem(scrapy.Item):
     # define the fields for your item here like:
@@ -9,12 +10,8 @@ class QuoteItem(scrapy.Item):
 
 class CarItem(scrapy.Item):
     id = scrapy.Field()
-    brand = scrapy.Field()
-    model = scrapy.Field()
-    year = scrapy.Field()
-    price = scrapy.Field()
-    mileage = scrapy.Field()
-    fuel_type = scrapy.Field()
-    location = scrapy.Field()
     url = scrapy.Field()
+    price = scrapy.Field()
+    year = scrapy.Field()
+    kilometers = scrapy.Field()
     source = scrapy.Field()
