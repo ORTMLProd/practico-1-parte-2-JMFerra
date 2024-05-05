@@ -1,8 +1,4 @@
-from typing import Iterator
-
-from requests.utils import requote_uri
-from scrapy import signals
-from scrapy.http.response.html import HtmlResponse
+import scrapy
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 
@@ -28,37 +24,19 @@ class CaroneSpider(CrawlSpider):
     rules = (
         Rule(
             LinkExtractor(
-                restrict_css=".resultados .h-product .h-product-content a",
+                restrict_css=".carone-car-info-data a.link-primary",
                 unique=True
             ),
             callback="parse_car"
         ),
     )
 
-    def parse_car(self, response: HtmlResponse) -> Iterator[dict]:
-        def get_with_css(query: str) -> str:
-            return response.css(query).get(default="").strip()
+    def parse_car(self, response: scrapy.http.Response):
+        car_url = response.url
+        price = response.css('.price-container .price::text').get()
 
-        car_id = get_with_css(".id-ficha::text")
-        brand = get_with_css(".marca-ficha::text")
-        model = get_with_css(".modelo-ficha::text")
-        year = get_with_css(".anio-ficha::text")
-        price = get_with_css(".precio-ficha::text")
-        mileage = get_with_css(".kilometraje-ficha::text")
-        fuel_type = get_with_css(".combustible-ficha::text")
-        location = get_with_css(".localizacion-ficha::text")
-        url = requote_uri(response.request.url)
-
-        car = {
-            "id": car_id,
-            "brand": brand,
-            "model": model,
-            "year": year,
-            "price": price,
-            "mileage": mileage,
-            "fuel_type": fuel_type,
-            "location": location,
-            "url": url,
-            "source": "carone",
-        }
-        yield CarItem(**car)
+        yield CarItem(
+            url=car_url,
+            price=price,
+            source="carone"
+        )

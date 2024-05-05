@@ -25,4 +25,4 @@ CMD ["bash"]
 
 # docker build -t scrapy .
 # docker run -it scrapy bash 
-# scrapy crawl gallito
+# scrapy crawl carone
