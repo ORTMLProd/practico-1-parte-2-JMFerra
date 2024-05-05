@@ -6,7 +6,7 @@ from scrapy.http.response.html import HtmlResponse
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 
-from scrapers.items import CarItem
+from scrapers.items import PropertyItem
 
 
 class CaroneSpider(CrawlSpider):
