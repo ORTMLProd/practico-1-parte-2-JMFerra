@@ -34,7 +34,7 @@ RUN unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
 COPY . .
 
 # Ejecuta la araña
-CMD ["scrapy", "crawl", "carone"]
+CMD ["bash"]
 
 # docker build -t scrapy .
 # docker run -it scrapy bash 

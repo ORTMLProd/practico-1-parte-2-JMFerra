@@ -69,3 +69,17 @@ class ItemLimit:
                 f"{exc}"
             )
         return cls(max_items_per_label, label_field)
+
+
+class CustomImagesPipeline(ImagesPipeline):
+
+    def file_path(self, request, response=None, info=None):
+        image_guid = request.url.split('/')[-1]
+        return f'full/{image_guid}'
+
+    def item_completed(self, results, item, info):
+        image_paths = [x['path'] for ok, x in results if ok]
+        if not image_paths:
+            raise DropItem("Image Download Failed")
+        item['image_paths'] = image_paths
+        return item

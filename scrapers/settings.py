@@ -63,9 +63,12 @@ ROBOTSTXT_OBEY = False
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
+    'scrapy.pipelines.images.ImagesPipeline': 1,
     "scrapers.pipelines.DuplicatesPipeline": 100,
     "scrapers.pipelines.JSONPipeline": 200,  # Agrega el pipeline JSONPipeline aquí
 }
+
+IMAGES_STORE = '/scrapers/spiders'
 
 # IMAGES_STORE = "s3://mlprod-scrapers/gallito/"
 # IMAGES_STORE = "<local_path>"
