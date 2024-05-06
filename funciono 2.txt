@@ -1,5 +1,6 @@
 import scrapy
 from scrapers.items import CarItem
+import re
 
 class CarOneSpider(scrapy.Spider):
     name = 'carone'
@@ -14,18 +15,23 @@ class CarOneSpider(scrapy.Spider):
 
     def parse(self, response):
         # Obtener los enlaces de los autos
-        cars = response.xpath('//a[@class="link-primary"]/@href').getall()
-        for car_link in cars:
+        car_links = response.css('a.link-primary::attr(href)').getall()
+        for car_link in car_links:
             yield response.follow(car_link, callback=self.parse_car)
 
     def parse_car(self, response):
         car_id = response.url.split('/')[-1]
+        
         car_item = CarItem(
             id=car_id,
             url=response.url,
             price=response.css('span.price-wrapper span.price::text').get(),
             year=response.xpath('//p[contains(text(), "Año")]/preceding-sibling::p/text()').get(),
+            image_url = response.css('.img-container-sm img::attr(src)').get(),
             kilometers=response.xpath('//p[contains(text(), "Kilómetros")]/preceding-sibling::p/text()').get(),
+            engine=response.xpath('//p[contains(.,"Cilindrada")]/following-sibling::p/text()').get(),
+            airbags=response.xpath('//p[contains(.,"Airbags")]/following-sibling::p/text()').get(),
             source="Concesionaria Car One"
         )
+        
         yield car_item

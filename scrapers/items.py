@@ -11,10 +11,10 @@ class QuoteItem(scrapy.Item):
 class CarItem(scrapy.Item):
     id = scrapy.Field()
     url = scrapy.Field()
+    image_urls = scrapy.Field()
     price = scrapy.Field()
     year = scrapy.Field()
     kilometers = scrapy.Field()
-    source = scrapy.Field()
     engine = scrapy.Field()
     airbags = scrapy.Field()
-    image_urls = scrapy.Field()
+    source = scrapy.Field()
