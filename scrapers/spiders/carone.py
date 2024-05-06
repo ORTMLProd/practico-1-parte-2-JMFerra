@@ -28,7 +28,6 @@ class CarOneSpider(scrapy.Spider):
             kilometers=response.xpath('//p[contains(text(), "Kilómetros")]/preceding-sibling::p/text()').get(),
             engine=response.xpath('//p[contains(.,"Cilindrada")]/following-sibling::p/text()').get(),
             airbags=response.xpath('//p[contains(.,"Airbags")]/following-sibling::p/text()').get(),
-            transmission=response.xpath('//p[contains(.,"Transmisión")]/following-sibling::p/text()').get(),
             source="Concesionaria Car One"
         )
         

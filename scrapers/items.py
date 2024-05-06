@@ -15,7 +15,6 @@ class CarItem(scrapy.Item):
     year = scrapy.Field()
     kilometers = scrapy.Field()
     source = scrapy.Field()
-    transmission = scrapy.Field()
     engine = scrapy.Field()
     airbags = scrapy.Field()
     image_urls = scrapy.Field()
